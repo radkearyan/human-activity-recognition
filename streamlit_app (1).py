@@ -5,17 +5,17 @@ import pandas as pd
 
 st.set_page_config(
     page_title="Human Activity Recognition (HAR)",
-    page_icon="🏃",
+    page_icon="☘",
     layout="centered"
 )
 
-st.title("🏃 Human Activity Recognition Predictor")
+st.title("ሶ Human Activity Recognition Predictor")
 st.write("This interactive app uses the tuned **Linear SVM** model to predict user physical activity from smartphone sensor readings.")
 
 # 1. Load the pipeline
 @st.cache_resource
 def load_model():
-    return joblib.load('har_svm_pipeline.joblib')
+    return joblib.load("har_svm_pipeline.joblib")
 
 try:
     pipeline = load_model()
@@ -24,23 +24,23 @@ except Exception as e:
     st.stop()
 
 activity_labels = {
-    1: 'WALKING',
-    2: 'WALKING_UPSTAIRS',
-    3: 'WALKING_DOWNSTAIRS',
-    4: 'SITTING',
-    5: 'STANDING',
-    6: 'LAYING'
+    1: "WALKING",
+    2: "WALKING_UPSTAIRS",
+    3: "WALKING_DOWNSTAIRS",
+    4: "SITTING",
+    5: "STANDING",
+    6: "LAYING"
 }
 
 # Activity visual indicator helper
 def get_activity_emoji(activity):
     icons = {
-        'WALKING': '🚶 (Walking)',
-        'WALKING_UPSTAIRS': '🚶‍♂️ climb (Walking Upstairs)',
-        'WALKING_DOWNSTAIRS': '🚶‍♂️ descend (Walking Downstairs)',
-        'SITTING': '🪑 (Sitting)',
-        'STANDING': '🧍 (Standing)',
-        'LAYING': '🛌 (Laying)'
+        "WALKING": "ሶ (Walking)",
+        "WALKING_UPSTAIRS": "ሶ‍♂️ climb (Walking Upstairs)",
+        "WALKING_DOWNSTAIRS": "ሶ‍♂️ descend (Walking Downstairs)",
+        "SITTING": "ኑ (Sitting)",
+        "STANDING": "ሳ (Standing)",
+        "LAYING": "ኂ (Laying)"
     }
     return icons.get(activity, "❓ (Unknown)")
 
@@ -61,15 +61,15 @@ if option == "Load Real Activity Sample from Test Set":
     # Selected activity to load
     target_act = st.selectbox("Select an activity to simulate:", list(activity_labels.values()))
 
-    if st.button("🎲 Load Selected Activity Sample"):
+    if st.button("ቲ Load Selected Activity Sample"):
         try:
             import pandas as pd
-            X_test_df = pd.read_csv('/content/UCI HAR Dataset/test/X_test.txt', delim_whitespace=True, header=None)
-            y_test_df = pd.read_csv('/content/UCI HAR Dataset/test/y_test.txt', delim_whitespace=True, header=None, names=['Activity'])
+            X_test_df = pd.read_csv("/content/UCI HAR Dataset/test/X_test.txt", sep="\\s+", header=None)
+            y_test_df = pd.read_csv("/content/UCI HAR Dataset/test/y_test.txt", sep="\\s+", header=None, names=["Activity"])
 
             # Find key matching activity label value
             class_id = [k for k, v in activity_labels.items() if v == target_act][0]
-            matching_indices = y_test_df[y_test_df['Activity'] == class_id].index
+            matching_indices = y_test_df[y_test_df["Activity"] == class_id].index
 
             if len(matching_indices) > 0:
                 random_idx = np.random.choice(matching_indices)
@@ -96,12 +96,12 @@ else:
 
 # Display target validation card
 if st.session_state.true_activity:
-    st.markdown(f"### **Expected Target Activity:**\\n## {get_activity_emoji(st.session_state.true_activity)}")
+    st.markdown(f"### **Expected Target Activity:**  \\n## {get_activity_emoji(st.session_state.true_activity)}")
 
 # 2. Inference Section
 st.subheader("2. Activity Classification")
 
-if st.button("🔍 Predict Activity"):
+if st.button("ቑ Predict Activity"):
     input_array = np.array(st.session_state.features).reshape(1, -1)
     prediction = int(pipeline.predict(input_array)[0])
     predicted_activity = activity_labels[prediction]
@@ -116,7 +116,7 @@ if st.button("🔍 Predict Activity"):
         else:
             st.warning("⚠️ Verification MISMATCH! Model predicted a different state.")
     else:
-        if 'WALKING' in predicted_activity:
+        if "WALKING" in predicted_activity:
              st.info("Dynamic State detected: The user is actively moving.")
         else:
              st.success("Static State detected: The user is resting or stationary.")
