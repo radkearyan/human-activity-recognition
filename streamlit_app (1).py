@@ -57,22 +57,20 @@ if "true_activity" not in st.session_state:
 
 if option == "Load Real Activity Sample from Test Set":
     st.info("We will pull a real physical sensor sample from the test dataset to let you verify accuracy!")
-    
+
     # Selected activity to load
     target_act = st.selectbox("Select an activity to simulate:", list(activity_labels.values()))
-    
+
     if st.button("🎲 Load Selected Activity Sample"):
         try:
-            # Fetch indices matching chosen class from notebook globals if available
-            # Or run a fallback locally
             import pandas as pd
             X_test_df = pd.read_csv('/content/UCI HAR Dataset/test/X_test.txt', delim_whitespace=True, header=None)
             y_test_df = pd.read_csv('/content/UCI HAR Dataset/test/y_test.txt', delim_whitespace=True, header=None, names=['Activity'])
-            
+
             # Find key matching activity label value
             class_id = [k for k, v in activity_labels.items() if v == target_act][0]
             matching_indices = y_test_df[y_test_df['Activity'] == class_id].index
-            
+
             if len(matching_indices) > 0:
                 random_idx = np.random.choice(matching_indices)
                 st.session_state.features = X_test_df.iloc[random_idx].values
@@ -90,7 +88,7 @@ else:
     f1 = st.slider("Mean Body Acceleration X", -1.0, 1.0, 0.27)
     f2 = st.slider("Mean Body Acceleration Y", -1.0, 1.0, -0.02)
     f3 = st.slider("Mean Body Acceleration Z", -1.0, 1.0, -0.11)
-    
+
     st.session_state.features[0] = f1
     st.session_state.features[1] = f2
     st.session_state.features[2] = f3
@@ -98,8 +96,7 @@ else:
 
 # Display target validation card
 if st.session_state.true_activity:
-    st.markdown(f"### **Expected Target Activity:**  
-## {get_activity_emoji(st.session_state.true_activity)}")
+    st.markdown(f"### **Expected Target Activity:**\\n## {get_activity_emoji(st.session_state.true_activity)}")
 
 # 2. Inference Section
 st.subheader("2. Activity Classification")
@@ -108,10 +105,10 @@ if st.button("🔍 Predict Activity"):
     input_array = np.array(st.session_state.features).reshape(1, -1)
     prediction = int(pipeline.predict(input_array)[0])
     predicted_activity = activity_labels[prediction]
-    
+
     # Display Result
     st.metric(label="Predicted Class", value=predicted_activity)
-    
+
     # Match verification banner
     if st.session_state.true_activity:
         if predicted_activity == st.session_state.true_activity:
@@ -126,4 +123,4 @@ if st.button("🔍 Predict Activity"):
 
 st.divider()
 with st.expander("View Current 561 Feature Array"):
-    st.dataframe(pd.DataFrame(st.session_state.features, columns=["Value"])) 
+    st.dataframe(pd.DataFrame(st.session_state.features, columns=["Value"]))
